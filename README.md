@@ -1,6 +1,6 @@
 # PDF Toolkit
 
-A free, privacy-first PDF toolkit in development. **Merge PDF, Split PDF, Rotate PDF, and Delete Pages are available** and run locally in your browser.
+A free, privacy-first PDF toolkit in development. **Merge PDF, Split PDF, Rotate PDF, Delete Pages, and Organize PDF are available** and run locally in your browser.
 
 ## Requirements and quick start
 
@@ -9,7 +9,7 @@ Use Node.js **24 LTS** and npm **11 or newer**. .nvmrc selects Node 24. Install 
 ```sh
 git clone https://github.com/ChornyjKvas/pdf-toolkit.git
 cd pdf-toolkit
-git switch feat/pdf-delete-pages
+git switch feat/pdf-organizer
 npm ci
 npm run dev
 ```
@@ -84,6 +84,22 @@ Each operation reads the originally selected source again, not a previous edited
 
 The **50 MiB warning** is a convention, not a guaranteed safe maximum or size cap. Large or complex PDFs can exhaust memory or stall the main thread; browser/OS tab termination cannot be caught by the UI. No thumbnails, PDF repair, password handling, PDF.js, or new dependencies are included. Modern browser file/Blob/download support is required, and mobile download behavior varies.
 
+## Organize PDF
+
+1. Open /#/organize-pdf and select or drop one PDF.
+2. Review thumbnails, source page identifiers and current positions. Use Earlier/Later to reorder, including across groups; moving across a boundary follows the moved page.
+3. Rotate any page clockwise/counterclockwise by 90 degrees, or Remove it. At least one page must remain.
+4. Undo restores the most recent edit, including removal. Reset changes restores every original page and angle.
+5. Download organized PDF creates a safely named source-basename-organized.pdf in visual order. A fallback download link remains available.
+
+Rotations are relative to original PDF angles, modulo 360. Edits, replacement, clear, reprocessing and navigation revoke old download URLs; stale completions cannot publish results. Controls lock during validation/export. Copying source pages preserves tested geometry, crop boxes and content; advanced forms, bookmarks, metadata and signatures are not guaranteed to survive.
+
+PDF.js **6.4.299** is pinned for previews only; pdf-lib remains the exporter. Vite bundles the local worker through its URL import. Configuration copies installed cMaps, standard fonts, WASM, ICC data and license into ignored public/pdfjs/ for local hosting. No CDN or document URL is used. The organizer route is lazy-loaded.
+
+Pagination mounts at most **six canvases**, with a FIFO queue limited to **two render tasks**. Thumbnails fit 220 by 260 CSS pixels with device-pixel ratio capped at 1.5. Orientation is preserved in a consistent preview frame. Pagination, rotation and removal cancel abandoned render tasks and clear canvas backing stores. Replacement/clear/navigation abort the loading task and destroy the PDF.js session. A failed page preview has an individual placeholder; document-level preview failure still permits controls/export.
+
+Pointer drag-to-reorder is deferred; move buttons support mouse, touch and keyboard. The 50 MiB warning is not a safe maximum. Pagination bounds raster allocation, not total parser memory; complex documents can still exhaust memory. Export uses the main thread. Password handling, repair and universal advanced-feature preservation remain unsupported.
+
 ## Commands
 
 | Command | Purpose |
@@ -100,18 +116,19 @@ The **50 MiB warning** is a convention, not a guaranteed safe maximum or size ca
 ## Structure and routing
 
 - src/components: shared layout, navigation, and route-change focus management.
-- src/pages: homepage, all four PDF tool UIs, and 404 page.
+- src/pages: homepage, all five PDF tool UIs, and 404 page.
 - src/lib/tools.ts: planned tool metadata.
-- src/lib/pdf: pure merge/split/rotate/delete/inspection functions, shared 1-based range parser, controlled errors, and local file validation helpers.
+- src/lib/pdf: pure merge/split/rotate/delete/organize/inspection functions, shared 1-based range parser, controlled errors, and local file validation helpers.
+- src/lib/preview: local PDF.js adapter and bounded render queue.
 - src/styles: Tailwind CSS with the official Vite plugin and small custom styles.
 - src/test and src/lib/pdf/*.test.ts: route, navigation, range validation, UI lifecycle, PDF ordering, failure, and cleanup tests using synthetic in-memory documents.
 - docs/ROADMAP.md: next milestones.
 
-React + TypeScript + Vite power the app. React Router uses **hash routing** so deep links work on static hosts without rewrite rules: /#/merge-pdf, /#/split-pdf, /#/rotate-pdf, and /#/delete-pdf. Unknown hash routes show the app's 404 page. The route paths are /merge-pdf, /split-pdf, /rotate-pdf, and /delete-pdf inside the router. A direct server URL such as /merge-pdf is not a supported deep link on a host without rewrites. Relative build assets support hosting under a repository subdirectory. Deployment is not configured.
+React + TypeScript + Vite power the app. React Router uses **hash routing** so deep links work on static hosts without rewrite rules: /#/merge-pdf, /#/split-pdf, /#/rotate-pdf, /#/delete-pdf, and /#/organize-pdf. Unknown hash routes show the app's 404 page. The route paths are /merge-pdf, /split-pdf, /rotate-pdf, /delete-pdf, and /organize-pdf inside the router. A direct server URL such as /merge-pdf is not a supported deep link on a host without rewrites. Relative build assets support hosting under a repository subdirectory. Deployment is not configured.
 
 ## Privacy and future PDF work
 
-All four tools read File.arrayBuffer locally and use pdf-lib to process output bytes. Local Blob URLs provide downloads; there is no document upload request, document persistence, or application logging of document contents/filenames. Input File references are released when removed, replaced, cleared, or the page unmounts. Operation tokens prevent late asynchronous results from publishing after navigation. Future tools must follow the same local-processing and cleanup principles. PDF.js is deferred until previews are needed.
+All five tools read File.arrayBuffer locally and use pdf-lib to process output bytes. Local Blob URLs provide downloads; there is no document upload request, document persistence, or application logging of document contents/filenames. Input File references are released when removed, replaced, cleared, or the page unmounts. Operation tokens prevent late asynchronous results from publishing after navigation. Future tools must follow the same local-processing and cleanup principles. Organize PDF lazily loads PDF.js for local previews; the other tools do not render thumbnails.
 
 No backend, database, authentication, payments, advertising, analytics, AI API, or uploaded-document storage is included. Automated tests verify page counts, dimensions, source order, rotation, invalid/encrypted/zero-page inputs, and the merge UI. Use synthetic documents for manual testing; never commit personal PDFs.
 

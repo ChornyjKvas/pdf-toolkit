@@ -5,12 +5,12 @@ import { describe, expect, it } from 'vitest'
 import App from '../App'
 
 describe('frontend foundation', () => {
-  it('shows the homepage, four tool links, and honest privacy copy', () => {
+  it('shows the homepage, five tool links, and honest privacy copy', () => {
     render(<MemoryRouter><App /></MemoryRouter>)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Less friction.More finished.')
     const section = screen.getByRole('region', { name: 'A tool for each small task.' })
-    expect(within(section).getAllByRole('link')).toHaveLength(4)
-    const expectedLinks = [['Merge PDF', '/merge-pdf'], ['Split PDF', '/split-pdf'], ['Rotate PDF', '/rotate-pdf'], ['Delete Pages', '/delete-pdf']]
+    expect(within(section).getAllByRole('link')).toHaveLength(5)
+    const expectedLinks = [['Merge PDF', '/merge-pdf'], ['Split PDF', '/split-pdf'], ['Rotate PDF', '/rotate-pdf'], ['Delete Pages', '/delete-pdf'], ['Organize PDF', '/organize-pdf']]
     for (const [name, path] of expectedLinks) expect(within(section).getByRole('link', { name: `${name} — Available` })).toHaveAttribute('href', path)
     expect(screen.getByText('Your files stay in your browser.')).toBeVisible()
     expect(screen.getByText(/No PDF content is sent to our servers/)).toBeVisible()

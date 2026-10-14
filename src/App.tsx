@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import { Layout } from './components/Layout'
 import { HomePage } from './pages/HomePage'
 import { NotFoundPage } from './pages/NotFoundPage'
@@ -6,6 +7,7 @@ import { MergePage } from './pages/MergePage'
 import { SplitPage } from './pages/SplitPage'
 import { RotatePage } from './pages/RotatePage'
 import { DeletePagesPage } from './pages/DeletePagesPage'
+const OrganizerPage = lazy(() => import('./pages/OrganizerPage'))
 
 export default function App() {
   return (
@@ -16,6 +18,7 @@ export default function App() {
         <Route path="/split-pdf" element={<SplitPage />} />
         <Route path="/rotate-pdf" element={<RotatePage />} />
         <Route path="/delete-pdf" element={<DeletePagesPage />} />
+        <Route path="/organize-pdf" element={<Suspense fallback={<p role="status">Loading organizer…</p>}><OrganizerPage /></Suspense>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Layout>
