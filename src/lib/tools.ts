@@ -3,6 +3,7 @@ export const tools = [
   { name: 'Split PDF', path: '/split-pdf', mark: '02', description: 'Take just the pages you need from a PDF.', detail: 'Extract individual pages or selected page ranges.' },
   { name: 'Rotate PDF', path: '/rotate-pdf', mark: '03', description: 'Give sideways pages the right perspective.', detail: 'Change the orientation of selected pages.' },
   { name: 'Delete Pages', path: '/delete-pdf', mark: '04', description: 'Keep the useful pages. Leave the rest behind.', detail: 'Remove unwanted pages from a document.' },
+  { name: 'Organize PDF', path: '/organize-pdf', mark: '05', description: 'See, reorder, rotate, and remove your pages.', detail: 'Arrange a single PDF visually before downloading.' },
 ] as const
 
 export type Tool = (typeof tools)[number]

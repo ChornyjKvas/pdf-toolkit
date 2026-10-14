@@ -13,3 +13,4 @@ Thumbs.db
 *.local
 *.tmp
 .npm-cache/
+public/pdfjs/
