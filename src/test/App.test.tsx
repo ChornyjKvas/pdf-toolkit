@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { HashRouter, MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
-import { tools } from '../lib/tools'
 
 describe('frontend foundation', () => {
   it('shows the homepage, four tool links, and honest privacy copy', () => {
@@ -12,18 +11,17 @@ describe('frontend foundation', () => {
     const section = screen.getByRole('region', { name: 'A tool for each small task.' })
     expect(within(section).getAllByRole('link')).toHaveLength(4)
     const expectedLinks = [['Merge PDF', '/merge-pdf'], ['Split PDF', '/split-pdf'], ['Rotate PDF', '/rotate-pdf'], ['Delete Pages', '/delete-pdf']]
-    for (const [name, path] of expectedLinks) expect(within(section).getByRole('link', { name: `${name} — ${path === '/delete-pdf' ? 'Coming soon' : 'Available'}` })).toHaveAttribute('href', path)
+    for (const [name, path] of expectedLinks) expect(within(section).getByRole('link', { name: `${name} — Available` })).toHaveAttribute('href', path)
     expect(screen.getByText('Your files stay in your browser.')).toBeVisible()
     expect(screen.getByText(/No PDF content is sent to our servers/)).toBeVisible()
   })
 
-  it.each(tools.filter((tool) => tool.path === '/delete-pdf'))('$path renders an honest placeholder and a home link', (tool) => {
-    render(<MemoryRouter initialEntries={[tool.path]}><App /></MemoryRouter>)
-    expect(screen.getByRole('heading', { level: 1, name: tool.name })).toBeVisible()
-    expect(screen.getByText('Coming soon')).toBeVisible()
-    expect(screen.getByText(/There is currently no file upload or PDF processing functionality/)).toBeVisible()
-    expect(within(screen.getByRole('main')).getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/')
-    expect(document.querySelector('input[type="file"]')).toBeNull()
+  it('opens the Delete Pages tool with an empty, disabled action', () => {
+    render(<MemoryRouter initialEntries={['/delete-pdf']}><App /></MemoryRouter>)
+    expect(screen.getByRole('heading', { level: 1, name: 'Delete Pages' })).toBeVisible()
+    expect(screen.getByLabelText('Choose one PDF')).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Delete pages' })).toBeDisabled()
+    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument()
   })
 
   it('shows a 404 for an unknown route', () => {
