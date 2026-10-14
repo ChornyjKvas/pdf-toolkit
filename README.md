@@ -1,6 +1,6 @@
 # PDF Toolkit
 
-A free, privacy-first PDF toolkit in development. **Merge, Split, and Rotate PDF are available** and run locally in your browser. Delete Pages remains **Coming soon**.
+A free, privacy-first PDF toolkit in development. **Merge PDF, Split PDF, Rotate PDF, and Delete Pages are available** and run locally in your browser.
 
 ## Requirements and quick start
 
@@ -9,7 +9,7 @@ Use Node.js **24 LTS** and npm **11 or newer**. .nvmrc selects Node 24. Install 
 ```sh
 git clone https://github.com/ChornyjKvas/pdf-toolkit.git
 cd pdf-toolkit
-git switch feat/pdf-rotate
+git switch feat/pdf-delete-pages
 npm ci
 npm run dev
 ```
@@ -69,6 +69,21 @@ Every operation reads the original selected source again, so repeated clicks do 
 
 Empty, malformed/unsupported, encrypted/password-protected and zero-page PDFs are rejected using shared validation. Read/save/processing failures show an error without a download. The existing **50 MiB warning** is not a safe maximum: large/complex PDFs may exhaust memory or temporarily stall the browser. Processing is on the main thread; browser/OS termination cannot be caught by the UI. No thumbnails, PDF.js, repair, password handling, or additional dependencies are included. Browser download compatibility follows the same modern-browser requirements as Merge and Split.
 
+## Delete Pages
+
+1. Open /#/delete-pdf and choose or drop **one** PDF. Review its filename, size, and detected page count.
+2. Enter **Pages to delete**, for example `2,4-6` or `1-3`. Page numbers start at 1; spaces around commas/hyphens are allowed.
+3. Review the live removal/retention summary, then select Delete pages.
+4. Download `<source-basename>-pages-removed.pdf`.
+
+An explicit valid selection is required. Empty, malformed, duplicate, overlapping, descending, zero/negative, and out-of-bounds selections are rejected through the shared range parser. **At least one page must remain**, enforced in both UI and PDF operation; deleting every page, including the only page of a one-page PDF, is refused. No blank page is inserted to replace an empty result.
+
+The operation creates a new PDF by copying retained pages in their original sequence, preserving their tested content streams, dimensions, and rotation. It does not delete source indices in place, so index shifts cannot alter the selection. Document-level metadata, forms, bookmarks, attachments, and signatures are not guaranteed to survive this page-copy workflow. PDF editing must not be treated as preserving signature validity.
+
+Each operation reads the originally selected source again, not a previous edited output. Changing source/ranges, clearing, reprocessing, and navigation invalidate prior downloads and revoke Blob URLs. Busy controls prevent double submissions and conflicting changes; late completions after navigation cannot publish stale results. Source validation and read/save/processing failures follow the same controlled-error patterns as other tools. Output names use the shared safe-basename helper.
+
+The **50 MiB warning** is a convention, not a guaranteed safe maximum or size cap. Large or complex PDFs can exhaust memory or stall the main thread; browser/OS tab termination cannot be caught by the UI. No thumbnails, PDF repair, password handling, PDF.js, or new dependencies are included. Modern browser file/Blob/download support is required, and mobile download behavior varies.
+
 ## Commands
 
 | Command | Purpose |
@@ -85,9 +100,9 @@ Empty, malformed/unsupported, encrypted/password-protected and zero-page PDFs ar
 ## Structure and routing
 
 - src/components: shared layout, navigation, and route-change focus management.
-- src/pages: homepage, Merge/Split/Rotate PDF UIs, Delete Pages placeholder, and 404 page.
+- src/pages: homepage, all four PDF tool UIs, and 404 page.
 - src/lib/tools.ts: planned tool metadata.
-- src/lib/pdf: pure merge/split/rotate/inspection functions, 1-based range parser, controlled errors, and local file validation helpers.
+- src/lib/pdf: pure merge/split/rotate/delete/inspection functions, shared 1-based range parser, controlled errors, and local file validation helpers.
 - src/styles: Tailwind CSS with the official Vite plugin and small custom styles.
 - src/test and src/lib/pdf/*.test.ts: route, navigation, range validation, UI lifecycle, PDF ordering, failure, and cleanup tests using synthetic in-memory documents.
 - docs/ROADMAP.md: next milestones.
@@ -96,7 +111,7 @@ React + TypeScript + Vite power the app. React Router uses **hash routing** so d
 
 ## Privacy and future PDF work
 
-Merge, Split, and Rotate PDF read File.arrayBuffer locally and use pdf-lib to process output bytes. Local Blob URLs provide downloads; there is no document upload request, document persistence, or application logging of document contents/filenames. Input File references are released when removed, replaced, cleared, or the page unmounts. Operation tokens prevent late asynchronous results from publishing after navigation. Future tools must follow the same local-processing and cleanup principles. PDF.js is deferred until previews are needed.
+All four tools read File.arrayBuffer locally and use pdf-lib to process output bytes. Local Blob URLs provide downloads; there is no document upload request, document persistence, or application logging of document contents/filenames. Input File references are released when removed, replaced, cleared, or the page unmounts. Operation tokens prevent late asynchronous results from publishing after navigation. Future tools must follow the same local-processing and cleanup principles. PDF.js is deferred until previews are needed.
 
 No backend, database, authentication, payments, advertising, analytics, AI API, or uploaded-document storage is included. Automated tests verify page counts, dimensions, source order, rotation, invalid/encrypted/zero-page inputs, and the merge UI. Use synthetic documents for manual testing; never commit personal PDFs.
 
