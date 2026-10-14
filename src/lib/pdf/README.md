@@ -1,8 +1,8 @@
-# Future PDF operations
+# Local PDF operations
 
-pdf-lib is installed for the next task; no PDF operation is implemented or imported into the current UI bundle.
+merge.ts implements inspection and page merging using pdf-lib. It accepts byte arrays and returns output bytes or a controlled PdfMergeError. Strict object parsing is enabled. Encryption is never bypassed. Zero-page inputs are rejected, and the writer's default blank-page behavior is disabled.
 
-Put future pure PDF functions here, separate from React components. Accept document bytes and options, return result bytes, and keep browser file selection, download URLs, and UI state in the presentation layer.
+files.ts performs preliminary local File validation and delegates actual parsing to inspectPdf. MergePage owns File references, visible order, busy states, and Blob URL lifetime. The UI reads files again on merge; parsed validation objects are not retained. This avoids keeping both parsed documents and raw byte copies in persistent component state.
 
 Guardrails for later implementation:
 - Process documents locally. Never send document bytes, names, metadata, or contents to a server.
@@ -11,4 +11,4 @@ Guardrails for later implementation:
 - Release object URLs with URL.revokeObjectURL after use; release byte buffers and component references when a task finishes or is cancelled.
 - Define and test memory/file-size limits before accepting large documents.
 
-These are requirements for subsequent tasks, not implemented PDF behavior.
+Merging implements local processing, controlled errors, and download cleanup. The size policy is a 50 MiB total warning with no fixed cap. Worker-based processing, previews, and more advanced document compatibility are deferred. Later operations must keep the same boundary and guardrails.
