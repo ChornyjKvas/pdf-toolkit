@@ -1,6 +1,6 @@
 # PDF Toolkit
 
-A free, privacy-first PDF toolkit in development. **Merge PDF and Split PDF are available** and run locally in your browser. Rotate and delete pages remain **Coming soon**.
+A free, privacy-first PDF toolkit in development. **Merge, Split, and Rotate PDF are available** and run locally in your browser. Delete Pages remains **Coming soon**.
 
 ## Requirements and quick start
 
@@ -9,7 +9,7 @@ Use Node.js **24 LTS** and npm **11 or newer**. .nvmrc selects Node 24. Install 
 ```sh
 git clone https://github.com/ChornyjKvas/pdf-toolkit.git
 cd pdf-toolkit
-git switch feat/pdf-split
+git switch feat/pdf-rotate
 npm ci
 npm run dev
 ```
@@ -54,6 +54,21 @@ Replacing or clearing the source resets ranges, errors, mode, and downloads. Cha
 
 Split reuses the **50 MiB** large-file warning threshold. It is not a size cap or a promise of safe memory usage. Very large or complex sources or outputs may exhaust memory; use fewer output groups or a smaller PDF. Browser/OS termination of a tab cannot be caught by the UI. Processing remains on the main thread, with coarse busy status rather than a fabricated percentage. Modern File.arrayBuffer, Blob, object URLs, and local downloads are required; mobile download behavior varies.
 
+## Rotate PDF
+
+1. Open /#/rotate-pdf and choose or drop **one** PDF. Review its filename, size, and validated page count.
+2. Keep **All pages** (default), or choose **Selected pages** and enter ranges such as `1,3-5` or `5,2-3`.
+3. Choose **90° clockwise**, **180°**, or **90° counterclockwise**.
+4. Select Rotate PDF, then download `<source-basename>-rotated.pdf`.
+
+Rotation is **relative** to each page's existing angle, modulo 360. Existing 90° + clockwise 90° becomes 180°; existing 270° + clockwise 90° becomes 0°; existing 90° + counterclockwise 90° becomes 0°. Counterclockwise 90° is equivalent to clockwise 270°.
+
+Selected-page expressions reuse Split's validation: spaces and singleton ranges are allowed; empty, malformed, duplicate, overlapping, descending, zero/negative, and out-of-bounds selections are rejected. Selection identifies target pages and **never reorders the document**. All pages, their original order, dimensions, and content streams are retained; only target rotations are changed. Saving does not regenerate form appearances. Preservation of every advanced PDF feature or signature is not guaranteed by pdf-lib.
+
+Every operation reads the original selected source again, so repeated clicks do not cumulatively rotate prior output. To rotate a downloaded result again, choose that file as the source. Changing source, mode, range, or direction invalidates the previous result and revokes its Blob URL. Reprocessing and navigation also revoke stale URLs. Options, source selection, and clear are disabled during validation/processing, and late completions after navigation are ignored.
+
+Empty, malformed/unsupported, encrypted/password-protected and zero-page PDFs are rejected using shared validation. Read/save/processing failures show an error without a download. The existing **50 MiB warning** is not a safe maximum: large/complex PDFs may exhaust memory or temporarily stall the browser. Processing is on the main thread; browser/OS termination cannot be caught by the UI. No thumbnails, PDF.js, repair, password handling, or additional dependencies are included. Browser download compatibility follows the same modern-browser requirements as Merge and Split.
+
 ## Commands
 
 | Command | Purpose |
@@ -70,9 +85,9 @@ Split reuses the **50 MiB** large-file warning threshold. It is not a size cap o
 ## Structure and routing
 
 - src/components: shared layout, navigation, and route-change focus management.
-- src/pages: homepage, Merge and Split PDF UIs, two tool placeholders, and 404 page.
+- src/pages: homepage, Merge/Split/Rotate PDF UIs, Delete Pages placeholder, and 404 page.
 - src/lib/tools.ts: planned tool metadata.
-- src/lib/pdf: pure merge/split/inspection functions, 1-based range parser, controlled errors, and local file validation helpers.
+- src/lib/pdf: pure merge/split/rotate/inspection functions, 1-based range parser, controlled errors, and local file validation helpers.
 - src/styles: Tailwind CSS with the official Vite plugin and small custom styles.
 - src/test and src/lib/pdf/*.test.ts: route, navigation, range validation, UI lifecycle, PDF ordering, failure, and cleanup tests using synthetic in-memory documents.
 - docs/ROADMAP.md: next milestones.
@@ -81,7 +96,7 @@ React + TypeScript + Vite power the app. React Router uses **hash routing** so d
 
 ## Privacy and future PDF work
 
-Merge and Split PDF read File.arrayBuffer locally and use pdf-lib to copy pages into output bytes. Local Blob URLs provide downloads; there is no document upload request, document persistence, or application logging of document contents/filenames. Input File references are released when removed, replaced, cleared, or the page unmounts. Operation tokens prevent late asynchronous results from publishing after navigation. Future tools must follow the same local-processing and cleanup principles. PDF.js is deferred until previews are needed.
+Merge, Split, and Rotate PDF read File.arrayBuffer locally and use pdf-lib to process output bytes. Local Blob URLs provide downloads; there is no document upload request, document persistence, or application logging of document contents/filenames. Input File references are released when removed, replaced, cleared, or the page unmounts. Operation tokens prevent late asynchronous results from publishing after navigation. Future tools must follow the same local-processing and cleanup principles. PDF.js is deferred until previews are needed.
 
 No backend, database, authentication, payments, advertising, analytics, AI API, or uploaded-document storage is included. Automated tests verify page counts, dimensions, source order, rotation, invalid/encrypted/zero-page inputs, and the merge UI. Use synthetic documents for manual testing; never commit personal PDFs.
 
