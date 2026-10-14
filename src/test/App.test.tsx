@@ -12,12 +12,12 @@ describe('frontend foundation', () => {
     const section = screen.getByRole('region', { name: 'A tool for each small task.' })
     expect(within(section).getAllByRole('link')).toHaveLength(4)
     const expectedLinks = [['Merge PDF', '/merge-pdf'], ['Split PDF', '/split-pdf'], ['Rotate PDF', '/rotate-pdf'], ['Delete Pages', '/delete-pdf']]
-    for (const [name, path] of expectedLinks) expect(within(section).getByRole('link', { name: `${name} — ${path === '/merge-pdf' || path === '/split-pdf' ? 'Available' : 'Coming soon'}` })).toHaveAttribute('href', path)
+    for (const [name, path] of expectedLinks) expect(within(section).getByRole('link', { name: `${name} — ${path === '/delete-pdf' ? 'Coming soon' : 'Available'}` })).toHaveAttribute('href', path)
     expect(screen.getByText('Your files stay in your browser.')).toBeVisible()
     expect(screen.getByText(/No PDF content is sent to our servers/)).toBeVisible()
   })
 
-  it.each(tools.filter((tool) => tool.path !== '/merge-pdf' && tool.path !== '/split-pdf'))('$path renders an honest placeholder and a home link', (tool) => {
+  it.each(tools.filter((tool) => tool.path === '/delete-pdf'))('$path renders an honest placeholder and a home link', (tool) => {
     render(<MemoryRouter initialEntries={[tool.path]}><App /></MemoryRouter>)
     expect(screen.getByRole('heading', { level: 1, name: tool.name })).toBeVisible()
     expect(screen.getByText('Coming soon')).toBeVisible()

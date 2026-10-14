@@ -6,6 +6,8 @@ split.ts reuses the existing loadPdf validator without changing Merge behavior. 
 
 Separate outputs are limited to 30 groups. Individual downloads are implemented; ZIP is deferred to avoid adding a dependency for this MVP. Filename helpers sanitize unsafe characters and cap basenames at 120 characters. SplitOptions contains accessible mode/range controls, separate from parser, splitter, and UI lifecycle logic.
 
+rotate.ts accepts document bytes, all-page mode or a 1-based selected-page expression, and 90/180/270 clockwise degrees. It reuses loadPdf and parsePageRanges, converts target indices within the operation, and adds the angle to each existing rotation modulo 360. It saves the loaded document in original order rather than reconstructing its pages; updateFieldAppearances:false avoids unrelated appearance regeneration. Unexpected save/processing errors become RotatePdfError. RotatePage handles File state and Blob URL lifetime; RotateOptions provides accessible mode/range/direction controls. Filenames reuse sourceBasename from split.ts. Merge and Split operations are unchanged.
+
 files.ts performs preliminary local File validation and delegates actual parsing to inspectPdf. MergePage owns File references, visible order, busy states, and Blob URL lifetime. The UI reads files again on merge; parsed validation objects are not retained. This avoids keeping both parsed documents and raw byte copies in persistent component state.
 
 Guardrails for later implementation:
