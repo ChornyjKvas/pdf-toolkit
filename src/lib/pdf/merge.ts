@@ -12,7 +12,7 @@ export class PdfMergeError extends Error {
   }
 }
 
-async function loadPdf(bytes: Uint8Array): Promise<PDFDocument> {
+export async function loadPdf(bytes: Uint8Array): Promise<PDFDocument> {
   if (!bytes.byteLength) throw new PdfMergeError('empty', 'This file is empty. Choose a PDF with at least one page.')
   try {
     const { PDFDocument } = await import('pdf-lib')

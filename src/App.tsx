@@ -5,6 +5,7 @@ import { ToolPage } from './pages/ToolPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { tools } from './lib/tools'
 import { MergePage } from './pages/MergePage'
+import { SplitPage } from './pages/SplitPage'
 
 export default function App() {
   return (
@@ -12,7 +13,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/merge-pdf" element={<MergePage />} />
-        {tools.filter((tool) => tool.path !== '/merge-pdf').map((tool) => <Route key={tool.path} path={tool.path} element={<ToolPage tool={tool} />} />)}
+        <Route path="/split-pdf" element={<SplitPage />} />
+        {tools.filter((tool) => tool.path !== '/merge-pdf' && tool.path !== '/split-pdf').map((tool) => <Route key={tool.path} path={tool.path} element={<ToolPage tool={tool} />} />)}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Layout>
