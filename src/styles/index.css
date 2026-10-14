@@ -4,7 +4,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
 a { color: inherit; text-decoration: none; }
-a:focus-visible { outline: 3px solid #246c55; outline-offset: 5px; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #246c55; outline-offset: 5px; }
 main:focus { outline: none; }
 .shell { max-width: 1240px; margin: auto; padding: 0 40px; }
 .site-header { display: flex; align-items: center; justify-content: space-between; padding: 30px 0; border-bottom: 1px solid #dce2d8; }
@@ -48,4 +48,28 @@ h1 { margin: 22px 0; font-size: clamp(46px, 6vw, 76px); line-height: 1.05; lette
 .placeholder-panel p { color: #57655e; line-height: 1.7; font-size: 15px; margin: 12px 0; }
 .primary-link { display: inline-flex; gap: 30px; padding: 14px 20px; border-radius: 6px; background: #214d3e; color: #fff; font-size: 13px; }
 .skip-link { position: fixed; left: 16px; top: -100px; z-index: 10; padding: 14px; background: #fff; border: 1px solid #214d3e; border-radius: 6px; }.skip-link:focus { top: 16px; }
+.merge-page { max-width: 870px; }
+.merge-privacy { padding: 14px 18px; border-radius: 8px; background: #eaf0e3; color: #39553f; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+.merge-dropzone { border: 2px dashed #82977d; border-radius: 12px; padding: 28px; background: #fcfdf9; }
+.picker-label { display: block; font-weight: 650; font-size: 18px; margin-bottom: 16px; }
+.merge-dropzone input { max-width: 100%; font-size: 14px; }
+.merge-dropzone input::file-selector-button { border: 1px solid #214d3e; background: #214d3e; color: white; padding: 10px 15px; margin-right: 12px; border-radius: 6px; cursor: pointer; }
+.merge-dropzone p, .size-help, .merge-status, .merge-result p { font-size: 13px; color: #53634f; line-height: 1.7; margin-top: 16px; }
+.size-help { margin-bottom: 28px; }
+.merge-summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 22px 0 14px; }
+.merge-summary h2 { font-size: 21px; font-weight: 650; }.merge-summary span { font-size: 12px; color: #53634f; }
+.empty-selection { color: #53634f; font-size: 14px; padding: 20px 0; }
+.merge-files { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.merge-file { display: flex; gap: 14px; padding: 18px; border: 1px solid #d7dfd2; background: #fcfdf9; border-radius: 9px; align-items: flex-start; }
+.file-position { color: #53634f; font-size: 14px; min-width: 18px; padding-top: 3px; }
+.file-info { flex: 1; min-width: 0; }.file-info strong { display: block; overflow-wrap: anywhere; font-size: 14px; font-weight: 650; }.file-info p { color: #53634f; font-size: 12px; line-height: 1.6; margin-top: 5px; }
+.file-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.file-actions button, .secondary-button { background: #fff; border: 1px solid #adbea6; border-radius: 6px; padding: 9px 12px; font-size: 12px; cursor: pointer; min-height: 40px; }
+.merge-controls { display: flex; align-items: center; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+button.primary-link { border: 0; cursor: pointer; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.merge-error, .file-info .file-error { color: #922e21; }.merge-error { font-size: 14px; line-height: 1.6; margin-top: 14px; }
+.merge-warning { color: #694513; background: #fff2d4; border: 1px solid #d9ba7b; padding: 16px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+.merge-result { border-top: 1px solid #d7dfd2; padding-top: 22px; margin-top: 24px; }
+@media (max-width: 640px) { .merge-dropzone { padding: 20px; }.merge-file { flex-wrap: wrap; padding: 16px; }.file-info { flex-basis: calc(100% - 38px); }.file-actions { padding-left: 32px; }.file-actions button { min-height: 44px; }.merge-summary { align-items: flex-start; flex-direction: column; }.merge-page .detail-description { font-size: 16px; } }
 @media (max-width: 640px) { .shell { padding: 0 22px; }.site-header { padding: 22px 0; }.header-note { display: none; }.hero { padding: 46px 0 35px; }h1 { letter-spacing: -2.3px; }.hero-description { font-size: 15px; }.section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }.section-heading h2 { font-size: 18px; }.tool-card { min-height: 220px; }.card-top { margin-bottom: 20px; }.foundation-note { margin-bottom: 32px; }.site-footer { align-items: flex-start; font-size: 10px; gap: 10px; }.placeholder-panel { padding: 23px; } }
