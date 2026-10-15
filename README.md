@@ -9,7 +9,7 @@ Use Node.js **24 LTS** and npm **11 or newer**. .nvmrc selects Node 24. Install 
 ```sh
 git clone https://github.com/ChornyjKvas/pdf-toolkit.git
 cd pdf-toolkit
-git switch feat/prelaunch-audit
+git switch feat/ci-release-gates
 npm ci
 npm run dev
 ```
@@ -99,6 +99,10 @@ PDF.js **6.4.299** is pinned for previews only; pdf-lib remains the exporter. Vi
 Pagination mounts at most **six canvases**, with a FIFO queue limited to **two render tasks**. Thumbnails fit 220 by 260 CSS pixels with device-pixel ratio capped at 1.5. Orientation is preserved in a consistent preview frame. Pagination, rotation and removal cancel abandoned render tasks and clear canvas backing stores. Replacement/clear/navigation abort the loading task and destroy the PDF.js session. A failed page preview has an individual placeholder; document-level preview failure still permits controls/export.
 
 Pointer drag-to-reorder is deferred; move buttons support mouse, touch and keyboard. The 50 MiB warning is not a safe maximum. Pagination bounds raster allocation, not total parser memory; complex documents can still exhaust memory. Export uses the main thread. Password handling, repair and universal advanced-feature preservation remain unsupported.
+
+## Continuous integration
+
+.github/workflows/ci.yml runs the locked install, lint, strict typecheck, all tests, production build and required PDF asset checks on PRs and main pushes using Node 24. It has read-only repository permissions and no deployment steps. Check the actual Actions conclusion; local results and missing checks are not CI success. Required status checks remain an owner-controlled setting. See docs/RELEASE_CHECKLIST.md for integration and launch gates.
 
 ## Commands
 

@@ -27,6 +27,41 @@ and fails if a package has no root license/notice file. This is a practical noti
 inventory, not a legal certification; review bundled worker/support-asset licenses
 before distribution. Do not replace or remove required third-party notices.
 
+## GitHub Actions quality gate
+
+The workflow is .github/workflows/ci.yml (CI / Quality gates (Node 24)). It runs
+on every PR regardless of target branch, including open/synchronize/reopen,
+ready-for-review and edited events, and pushes to main. Edited events also cover
+base retargeting. workflow_dispatch is available once the workflow exists on the
+default branch; it is not a shortcut for launching the site.
+
+On ubuntu-latest with Node 24, the exact ordered checks are npm ci, npm run lint,
+npm run typecheck, npm test, npm run build, followed by checks that the PDF.js
+worker/support files and dependency notices exist in dist. A failed command fails
+the job; there is no continue-on-error or deployment step. Superseded runs for
+the same PR/ref are cancelled. The stable job name is Quality gates (Node 24).
+
+Permissions are contents: read only. Checkout does not persist credentials; no
+repository secrets, publish token, Pages permissions or artifact upload is used.
+setup-node caches npm's download cache using package-lock.json, not node_modules.
+Official action releases are pinned by immutable SHA: checkout v7.0.1 and
+setup-node v7.1.0. Update pins through reviewed PRs, checking official release notes.
+References: https://github.com/actions/checkout/releases/tag/v7.0.1 and
+https://github.com/actions/setup-node/releases/tag/v7.1.0
+
+A local green test suite is not proof of a green Actions run. Before integrating
+this PR, inspect its actual Actions run, expected head/merge SHA, all steps and
+final success conclusion. Missing, queued, cancelled or approval-waiting checks
+are not successes. Investigate logs for failures; do not bypass a failing test.
+The Task 09 handoff report records the actual run or the precise execution blocker.
+
+Branch protection/rulesets and required status checks are owner-controlled
+repository settings. This task does not change them. The owner can require the
+observed Quality gates (Node 24) check after CI is integrated and available on
+main. Older stacked PR tips do not acquire this workflow retroactively: keep
+local gates for earlier integration steps, and verify the final main CI run.
+Do not require a nonexistent check on older tips and call them passing.
+
 ## Static host recommendation
 
 GitHub Pages is suitable for this repository: the application is static, uses
@@ -70,15 +105,18 @@ integrated. Before every step, fetch and verify current refs, diff and checks.
 4. Retarget PR #4 (`feat/pdf-rotate`) to `main`; verify its focused diff, then merge.
 5. Retarget PR #5 (`feat/pdf-delete-pages`) to `main`; verify its focused diff, then merge.
 6. Retarget PR #6 (`feat/pdf-organizer`) to `main`; verify its focused diff, then merge.
-7. Retarget the Task 08 PR (`feat/prelaunch-audit`) to `main`; review, re-run checks
-   on the final combined tree, then merge only with authorization.
+7. Retarget PR #7 (`feat/prelaunch-audit`) to `main`; review and re-run checks,
+   then merge only with authorization.
+8. Retarget PR #8 (`feat/ci-release-gates`) to `main`; verify its real CI run
+   against the updated base, review the focused diff, then merge only with
+   authorization. Confirm the subsequent main push also passes CI.
 
 GitHub may retarget children automatically if a base branch is deleted; do not
 rely on that behavior or delete branches early. A mergeability flag immediately
 after PR creation can be temporary. Fetch again and inspect ancestry/content
-before declaring a conflict. Missing CI is not passing CI: the stack currently
-has no committed workflow. Adding required CI is recommended before routine
-releases, through a separately reviewed change.
+before declaring a conflict. Missing CI is not passing CI. The new workflow
+first appears in PR #8; previous feature tips have no workflow. Owner-controlled
+required checks should be considered after the workflow is integrated.
 
 ## Manual regression checklist
 
@@ -110,9 +148,51 @@ releases, through a separately reviewed change.
 - Supplement manual checks with axe; review incomplete rules and test with a
   screen reader and physical mobile browsers before claiming broader support.
 
+## Observed browser checks and remaining checks
+
+Task 08 tested the production build at 320/390/640/1280px, all five keyboard
+flows, populated Split downloads, source-page controls, 120-page pagination,
+cleanup and actual organizer output. Those observations remain prior evidence;
+they are not Task 09 browser passes or actual 200% zoom results.
+
+Task 09 attempted native Windows Edge control for real browser zoom. The control
+runtime stopped because it could not determine the current browser URL with
+sufficient confidence. UI automation was stopped without changing zoom/security
+settings. Therefore actual 200% zoom, new populated-state browser smoke checks,
+new screen-reader speech, and a fresh 120-page browser check remain unverified
+in this task. The existing automated lifecycle/order tests still run in CI.
+
+Only Edge and the Codex in-app browser were available through the connected
+browser surfaces; on this Windows machine these do not provide an independent
+Firefox/WebKit engine. Firefox was absent from the checked standard install
+paths. No physical mobile session is connected. Windows Narrator exists, but
+could not be exercised after native UI control stopped. Do not mark any of these
+checks passed. The owner should complete them in the target browsers/devices.
+
+Source color-pair measurements covered text, hover card backgrounds, focus rings,
+help/error/warning copy and active controls; no active-text contrast failure was
+confirmed. The green large heading measured 3.836:1 against its page background;
+checked normal small text pairs were at least 4.820:1 and focus ring pairs at
+least 5.673:1. Disabled controls use 50% opacity and have reduced contrast; inactive
+controls are exempt from WCAG contrast requirements. This is a stylesheet-based
+measurement, not a new rendered-state or assistive-technology certification.
+Task 08's incomplete axe homepage contrast rule still merits target-browser review.
+
 ## Owner decisions and launch gate
 
 The owner must approve the PR merges and final public deployment separately.
+
+Final owner sign-off (do not infer approval from a green CI run):
+
+- [ ] Review PR #8 and the actual CI evidence; approve ordered integration #1–#8.
+- [ ] Verify final main CI success; separately decide required-check settings.
+- [ ] Complete actual 200% zoom on all six routes with populated states, screen
+      reader navigation/status checks, another engine and physical mobile downloads.
+- [ ] Confirm license/rights-reserved position, host, domain, contact/privacy and
+      indexing policy, and review dependency notices.
+- [ ] Approve the exact release commit/artifact and rollback plan.
+- [ ] Give explicit final deployment authorization; no Pages publishing is active.
+
 Choose a project license (or explicitly retain reserved rights and review the
 intended distribution), the static host, and a public support/contact policy.
 No email address, response-time promise or legal/privacy certification has been

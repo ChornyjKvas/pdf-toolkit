@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality gates (Node 24)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Build production assets
+        run: npm run build
+      - name: Verify production PDF assets and notices
+        shell: bash
+        run: |
+          test -s dist/THIRD_PARTY_NOTICES.txt
+          test -s dist/pdfjs/LICENSE.txt
+          test -s dist/pdfjs/standard_fonts/LICENSE_FOXIT
+          test -s dist/pdfjs/standard_fonts/LICENSE_LIBERATION
+          test -s dist/pdfjs/wasm/openjpeg.wasm
+          test -s dist/pdfjs/iccs/CGATS001Compat-v2-micro.icc
+          test -n "$(find dist/pdfjs/cmaps -type f -name '*.bcmap' -print -quit)"
+          test -n "$(find dist/assets -type f -name 'pdf.worker*.mjs' -print -quit)"
