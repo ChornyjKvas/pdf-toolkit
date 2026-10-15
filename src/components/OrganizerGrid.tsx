@@ -31,8 +31,8 @@ export function OrganizerGrid({ file, pages, start, total, disabled, onMove, onR
           <h2>Source page {page.id}</h2><p className="page-position">Position {index + 1} of {total} · Rotation added: {page.rotation}°</p>
           {session ? <PageThumbnail key={`${page.id}-${page.rotation}`} session={session} id={page.id} rotation={page.rotation} /> : <div className="thumbnail-frame"><p role={error ? undefined : 'status'}>{error ? `No preview for page ${page.id}` : `Loading page ${page.id} preview…`}</p></div>}
           <div className="page-controls">
-            <button type="button" disabled={disabled || index === 0} aria-label={`Move source page ${page.id} earlier`} onClick={() => onMove(index, -1)}>← Earlier</button>
-            <button type="button" disabled={disabled || index === total - 1} aria-label={`Move source page ${page.id} later`} onClick={() => onMove(index, 1)}>Later →</button>
+            <button type="button" disabled={disabled || index === 0} data-move="-1" aria-label={`Move source page ${page.id} earlier`} onClick={() => onMove(index, -1)}>← Earlier</button>
+            <button type="button" disabled={disabled || index === total - 1} data-move="1" aria-label={`Move source page ${page.id} later`} onClick={() => onMove(index, 1)}>Later →</button>
             <button type="button" disabled={disabled} aria-label={`Rotate source page ${page.id} clockwise 90 degrees`} onClick={() => onRotate(page.id, 90)}>↻ 90°</button>
             <button type="button" disabled={disabled} aria-label={`Rotate source page ${page.id} counterclockwise 90 degrees`} onClick={() => onRotate(page.id, 270)}>↺ 90°</button>
             <button type="button" disabled={disabled || total === 1} aria-label={`Remove source page ${page.id}`} onClick={() => onRemove(page.id)}>Remove</button>

@@ -19,4 +19,6 @@ Guardrails for later implementation:
 - Release object URLs with URL.revokeObjectURL after use; release byte buffers and component references when a task finishes or is cancelled.
 - Define and test memory/file-size limits before accepting large documents.
 
-Merging implements local processing, controlled errors, and download cleanup. The size policy is a 50 MiB total warning with no fixed cap. Worker-based processing, previews, and more advanced document compatibility are deferred. Later operations must keep the same boundary and guardrails.
+Merging implements local processing, controlled errors, and download cleanup. The size policy is a 50 MiB total warning with no fixed cap. PDF.js previews now run only on the lazy organizer route; pdf-lib exports remain on the main thread. More advanced document compatibility is deferred. Later operations must keep the same boundary and guardrails.
+
+organize.ts copies stable source IDs in visual order and applies relative quarter-turns. The organizer preview adapter uses local PDF.js bytes and worker/support assets, six-page pagination, a two-task queue, cancellation and canvas/session cleanup. Editing invalidates old download URLs. Pointer page dragging is deferred; move buttons provide keyboard and touch access.

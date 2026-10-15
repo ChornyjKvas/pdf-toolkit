@@ -9,7 +9,7 @@ Use Node.js **24 LTS** and npm **11 or newer**. .nvmrc selects Node 24. Install 
 ```sh
 git clone https://github.com/ChornyjKvas/pdf-toolkit.git
 cd pdf-toolkit
-git switch feat/pdf-organizer
+git switch feat/prelaunch-audit
 npm ci
 npm run dev
 ```
@@ -123,8 +123,9 @@ Pointer drag-to-reorder is deferred; move buttons support mouse, touch and keybo
 - src/styles: Tailwind CSS with the official Vite plugin and small custom styles.
 - src/test and src/lib/pdf/*.test.ts: route, navigation, range validation, UI lifecycle, PDF ordering, failure, and cleanup tests using synthetic in-memory documents.
 - docs/ROADMAP.md: next milestones.
+- docs/RELEASE_CHECKLIST.md: verified static-host requirements, ordered merge plan, owner launch decisions, regression checks and rollback.
 
-React + TypeScript + Vite power the app. React Router uses **hash routing** so deep links work on static hosts without rewrite rules: /#/merge-pdf, /#/split-pdf, /#/rotate-pdf, /#/delete-pdf, and /#/organize-pdf. Unknown hash routes show the app's 404 page. The route paths are /merge-pdf, /split-pdf, /rotate-pdf, /delete-pdf, and /organize-pdf inside the router. A direct server URL such as /merge-pdf is not a supported deep link on a host without rewrites. Relative build assets support hosting under a repository subdirectory. Deployment is not configured.
+React + TypeScript + Vite power the app. React Router uses **hash routing** so deep links work on static hosts without rewrite rules: /#/merge-pdf, /#/split-pdf, /#/rotate-pdf, /#/delete-pdf, and /#/organize-pdf. Unknown hash routes show the app's 404 page. The route paths are /merge-pdf, /split-pdf, /rotate-pdf, /delete-pdf, and /organize-pdf inside the router. A direct server URL such as /merge-pdf is not a supported deep link on a host without rewrites. Relative build assets support hosting under a repository subdirectory. Deployment is not configured. See docs/RELEASE_CHECKLIST.md before merging or publishing. The build includes dependency licenses in THIRD_PARTY_NOTICES.txt and PDF.js support-asset license files.
 
 ## Privacy and future PDF work
 

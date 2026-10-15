@@ -21,6 +21,17 @@ export default function OrganizerPage() {
   const operation = useRef(0)
   const urlRef = useRef<string | null>(null)
   const undoButton = useRef<HTMLButtonElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const movedFocus = useRef<{ id: number; direction: -1 | 1 } | null>(null)
+  useEffect(() => {
+    const moved = movedFocus.current
+    if (!moved) return
+    movedFocus.current = null
+    const card = gridRef.current?.querySelector('[data-page-id="' + moved.id + '"]')
+    const preferred = card?.querySelector<HTMLButtonElement>('button[data-move="' + moved.direction + '"]')
+    const fallback = card?.querySelector<HTMLButtonElement>('button[data-move="' + -moved.direction + '"]')
+    ;(preferred?.disabled ? fallback : preferred)?.focus()
+  }, [pages])
   useEffect(() => () => { operation.current += 1; if (urlRef.current) URL.revokeObjectURL(urlRef.current); urlRef.current = null }, [])
 
   function invalidate() {
@@ -46,10 +57,12 @@ export default function OrganizerPage() {
     invalidate(); setPrevious(pages); setPages(next)
   }
   function move(index: number, direction: -1 | 1) {
+    if (locked.current) return
     const target = index + direction
     if (target < 0 || target >= pages.length) return
     const reordered = [...pages]
     ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
+    movedFocus.current = { id: pages[index].id, direction }
     edit(reordered)
     setBatch(Math.floor(target / ORGANIZER_PAGE_SIZE))
   }
@@ -102,7 +115,7 @@ export default function OrganizerPage() {
         <span>Positions {start + 1}–{Math.min(start + ORGANIZER_PAGE_SIZE, pages.length)} of {pages.length}</span>
         <button type="button" disabled={currentBatch === lastBatch || !!busy} onClick={() => setBatch(currentBatch + 1)}>Next pages</button>
       </nav>
-      <OrganizerGrid key={sourceId} file={file!} pages={pages.slice(start, start + ORGANIZER_PAGE_SIZE)} start={start} total={pages.length} disabled={!!busy} onMove={move} onRotate={(id, amount) => edit(pages.map((page) => page.id === id ? { ...page, rotation: (page.rotation + amount) % 360 } : page))} onRemove={(id) => { if (pages.length <= 1) return; edit(pages.filter((page) => page.id !== id)); setTimeout(() => undoButton.current?.focus(), 0) }} />
+      <div ref={gridRef}><OrganizerGrid key={sourceId} file={file!} pages={pages.slice(start, start + ORGANIZER_PAGE_SIZE)} start={start} total={pages.length} disabled={!!busy} onMove={move} onRotate={(id, amount) => edit(pages.map((page) => page.id === id ? { ...page, rotation: (page.rotation + amount) % 360 } : page))} onRemove={(id) => { if (pages.length <= 1) return; edit(pages.filter((page) => page.id !== id)); setTimeout(() => undoButton.current?.focus(), 0) }} /></div>
     </>}
     <div className="merge-controls"><button className="primary-link" type="button" disabled={!pages.length || !!busy} onClick={() => void download()}>{busy === 'exporting' ? 'Preparing organized PDF…' : 'Download organized PDF'}</button>
       <button className="secondary-button" type="button" disabled={!file || !!busy} onClick={() => { if (locked.current) return; operation.current += 1; resetSource() }}>Clear PDF</button></div>
