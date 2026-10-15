@@ -22,11 +22,11 @@ export function Layout({ children }: { children: ReactNode }) {
   }, [pathname])
 
   return (
-    <div className="shell">
+    <div className={pathname === '/' ? 'shell home-shell' : 'shell'}>
       <a className="skip-link" href="#main-content" onClick={(event) => { event.preventDefault(); mainRef.current?.focus() }}>Skip to content</a>
       <header className="site-header">
         <Link to="/" className="brand"><span className="brand-mark">P.</span> PDF Toolkit</Link>
-        <span className="header-note">A little less paperwork.</span>
+        {pathname !== '/' && <span className="header-note">A little less paperwork.</span>}
       </header>
       <main ref={mainRef} id="main-content" tabIndex={-1}>{children}</main>
       <footer className="site-footer"><p>PDF Toolkit <span aria-hidden="true">/</span> In development</p><a href="./THIRD_PARTY_NOTICES.txt">Dependency licenses</a><Link to="/">Back to home <span aria-hidden="true">↗</span></Link></footer>
