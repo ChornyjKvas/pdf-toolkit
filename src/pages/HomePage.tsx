@@ -14,7 +14,7 @@ export function HomePage() {
         <div className="section-heading"><h2 id="tools-title">A tool for each small task.</h2><span>FIVE EVERYDAY TOOLS. READY TO USE.</span></div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
-            <Link className="tool-card" key={tool.path} to={tool.path} aria-label={`${tool.name} — Available`}>
+            <Link className="tool-card" key={tool.path} to={tool.path}>
               <div className="card-top"><span className="tool-number" aria-hidden="true">{tool.mark}</span><span className="badge">Available</span></div>
               <h3>{tool.name}</h3><p>{tool.description}</p><span className="card-link">Explore tool <span aria-hidden="true">↗</span></span>
             </Link>

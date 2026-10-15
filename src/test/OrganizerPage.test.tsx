@@ -42,6 +42,7 @@ describe('visual organizer', () => {
   it('loads the hash-compatible organizer route and offers one PDF picker', async () => {
     render(<MemoryRouter initialEntries={['/organize-pdf']}><App /></MemoryRouter>)
     expect(await screen.findByRole('heading', { name: 'Organize PDF', level: 1 })).toBeVisible()
+    expect(document.title).toBe('Organize PDF — PDF Toolkit')
     expect(screen.getByLabelText('Choose one PDF')).not.toHaveAttribute('multiple')
     expect(action()).toBeDisabled()
   })
@@ -116,6 +117,14 @@ describe('visual organizer', () => {
     expect(await screen.findByText(/Preview failed for source page 2/)).toBeVisible()
     expect(await screen.findByRole('img', { name: 'Preview of source page 1' })).toBeVisible()
     expect(action()).toBeEnabled()
+  })
+  it('keeps keyboard focus on a page moved across a pagination boundary', async () => {
+    open(); const user = await select(pdfFile('seven.pdf', await syntheticPdf([200, 210, 220, 230, 240, 250, 260])))
+    screen.getByRole('button', { name: 'Move source page 6 later' }).focus()
+    await user.keyboard('{Enter}')
+    expect(screen.getByRole('button', { name: 'Move source page 6 earlier' })).toHaveFocus()
+    await user.keyboard('{Enter}')
+    expect(screen.getByRole('button', { name: 'Move source page 6 earlier' })).toHaveFocus()
   })
   it('offers clear fallbacks when the preview document cannot load', async () => {
     open(); preview.open.mockRejectedValueOnce(new Error('synthetic preview load failure'))
