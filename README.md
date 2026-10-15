@@ -2,6 +2,8 @@
 
 A free, privacy-first PDF toolkit in development. **Merge PDF, Split PDF, Rotate PDF, Delete Pages, and Organize PDF are available** and run locally in your browser.
 
+The compact homepage puts the five working tools first, with a centered grid and local-processing information below. There are no format-conversion tools in this release. See docs/TOOL_CATALOG.md for the typed catalog and availability gate for future tools.
+
 ## Requirements and quick start
 
 Use Node.js **24 LTS** and npm **11 or newer**. .nvmrc selects Node 24. Install Node from its official distribution if npm is missing; this project needs no environment variables or credentials.
@@ -9,7 +11,7 @@ Use Node.js **24 LTS** and npm **11 or newer**. .nvmrc selects Node 24. Install 
 ```sh
 git clone https://github.com/ChornyjKvas/pdf-toolkit.git
 cd pdf-toolkit
-git switch feat/ci-release-gates
+git switch feat/compact-homepage
 npm ci
 npm run dev
 ```
